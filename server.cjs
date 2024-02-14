@@ -12,7 +12,7 @@ app.use(cors())
 async function connectToDb() {
     try {
         await mongoose.connect('mongodb+srv://Nivetha:nive@cluster0.e1tcriv.mongodb.net/SwiggyDB?retryWrites=true&w=majority')
-        console.log('DB connection established ;)')
+        console.log('DB connection established :)')
         const port = process.env.PORT || 8000
         app.listen(port, function() {
             console.log(`Listening on port ${port}...`)
@@ -57,6 +57,32 @@ app.get('/get-restaurant-details', async function(request, response) {
     }
 })
 
+app.delete('/delete-restaurant-detail/:id', async function(request, response) {
+    try {
+        const restaurant = await Restaurant.findById(request.params.id)
+        if(restaurant) {
+            await Restaurant.findByIdAndDelete(request.params.id)
+            response.status(200).json({
+                "status" : "success",
+                "message" : "deleted successfully"
+            })
+        } else { //restaurant : null
+            response.status(404).json({
+                "status" : "failure",
+                "message" : "entry not found"
+            })
+        }
+    } catch(error) {
+        response.status(500).json({
+            "status" : "failure",
+            "message" : "could not delete",
+            "error" : error
+        })
+    }
+})
+
+
+
 
 app.post('/create-new-user', async function(request, response) {
     try {
@@ -78,6 +104,9 @@ app.post('/create-new-user', async function(request, response) {
     }
  })
  
+
+
+
  app.post('/validate-user', async function(request, response) {
      try {
          const user = await Users.findOne({
@@ -99,3 +128,5 @@ app.post('/create-new-user', async function(request, response) {
          })
      }
  })
+
+
